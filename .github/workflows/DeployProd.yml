@@ -1,0 +1,54 @@
+name: Deploy prod
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-dotnet@v1
+        name: Set dotnet version
+        with:
+          dotnet-version: '5.0.x'
+
+      - run: dotnet restore
+        name: Restore nuget packages
+
+      - run: dotnet build --configuration Release
+        name: build
+
+      - run: dotnet publish -c Release -o ./demobc
+        name: publish
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: ./demobc
+
+  deploy-uat:
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+
+      - name: download artifcat
+        uses: actions/download-artifact@v2
+        with:
+          name: app
+          path: './artifacts/app'
+
+      - name: login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENTIALS }}
+
+      - name: 'Deploy to dev environment'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: demobootcamp-uat
+          package: './artifacts/app'
