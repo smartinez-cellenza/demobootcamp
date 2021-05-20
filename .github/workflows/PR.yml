@@ -15,8 +15,8 @@ jobs:
         with:
           dotnet-version: '5.0.x'
 
-      - name: Restore Nuget packagge
-        run: dotnet Restore
+      - name: Restore Nuget package
+        run: dotnet restore
 
       - name: build
         run: dotnet build --no-restore
