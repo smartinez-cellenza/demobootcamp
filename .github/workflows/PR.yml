@@ -1,0 +1,25 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [ develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set dotnet version
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Restore Nuget package
+        run: dotnet restore
+
+      - name: build
+        run: dotnet build --no-restore
+
+      - name: Run unit tests
+        run: dotnet test --no-build
