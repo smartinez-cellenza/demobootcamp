@@ -34,6 +34,8 @@ jobs:
   deploy-uat:
     runs-on: ubuntu-latest
     environment: uat
+    needs: 
+      - build
     steps:
 
       - name: download artifcat
