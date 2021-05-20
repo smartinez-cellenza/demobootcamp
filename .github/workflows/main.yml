@@ -1,0 +1,37 @@
+name: Deploy to Dev Environment
+
+on:
+  push:
+    branches:
+      - develop
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      
+      - uses: actions/checkout@v2
+      
+      - name: Set dotnet version
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: build
+        run: dotnet build --configuration Release
+        
+      - name: publish
+        run: dotnet publish -c Release -o ./demobootcamp
+        
+      - name: login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENTIALS }}
+          
+      - name: Deploy
+        uses: Azure/webapps-deploy@v2
+        with:
+          package: './demobootcamp'
+          app-name: demobootcamp-dev
+      
